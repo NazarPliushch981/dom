@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <script>
+        class HtmlElement {
+            constructor(tagName, isSelfClosing = false, textContent = "") {
+                this.tagName = tagName;
+                this.isSelfClosing = isSelfClosing;
+                this.textContent = textContent;
+                this.attributes = [];
+                this.styles = [];
+                this.children = [];
+            }
+            setAttr(name, value) { this.attributes.push({ name, value }); }
+            setStyle(name, value) { this.styles.push({ name, value }); }
+            append(element) { this.children.push(element); }
+            prepend(element) { this.children.unshift(element); }
+            getHtml() {
+                let attrsStr = "";
+                for (let i = 0; i < this.attributes.length; i++) {
+                    attrsStr += ` ${this.attributes[i].name}="${this.attributes[i].value}"`;
+                }
+                if (this.styles.length > 0) {
+                    let stylesStr = "";
+                    for (let i = 0; i < this.styles.length; i++) {
+                        stylesStr += `${this.styles[i].name}: ${this.styles[i].value}; `;
+                    }
+                    attrsStr += ` style="${stylesStr.trim()}"`;
+                }
+                if (this.isSelfClosing) return `<${this.tagName}${attrsStr}>\n`;
+                let childrenHtml = "";
+                for (let i = 0; i < this.children.length; i++) {
+                    childrenHtml += this.children[i].getHtml();
+                }
+                return `<${this.tagName}${attrsStr}>${this.textContent}${childrenHtml}</${this.tagName}>\n`;
+            }
+        }
+
+
+        class CssClass {
+            constructor(className) {
+                this.className = className; // назва класу, наприклад "wrap" або "block"
+                this.styles = []; // масив стилів {name, value}
+            }
+
+            setStyle(name, value) {
+                this.styles.push({ name: name, value: value });
+            }
+
+            deleteStyle(name) {
+                // видаляємо стиль за назвою
+                this.styles = this.styles.filter(s => s.name !== name);
+            }
+
+            getCss() {
+                let stylesStr = "";
+                for (let i = 0; i < this.styles.length; i++) {
+                    stylesStr += `    ${this.styles[i].name}: ${this.styles[i].value};\n`;
+                }
+                return `.${this.className} {\n${stylesStr}}\n`;
+            }
+        }
+
+        let testClass = new CssClass("block");
+        testClass.setStyle("width", "300px");
+        testClass.setStyle("margin", "10px");
+        console.log(testClass.getCss());
+    </script>
+    
+</body>
+</html>
